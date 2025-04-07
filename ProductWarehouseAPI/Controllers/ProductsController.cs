@@ -35,6 +35,11 @@ namespace ProductWarehouseAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProducts(ProductCreateDto productsDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _productService.AddProductsAsync(productsDto);
             if (!result)
                 return NotFound(new { message = "Product not found" });
@@ -45,6 +50,11 @@ namespace ProductWarehouseAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProducts(int id, [FromBody] ProductUpdateDto products)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _productService.UpdateProductAsync(id, products);
             if (!result)
                 return NotFound(new { message = "Product not found" });
@@ -65,6 +75,11 @@ namespace ProductWarehouseAPI.Controllers
         [HttpPut("/decrement-stock/{id:int}/{quantity:int}")]
         public async Task<IActionResult> DecrementStock(int id, int quantity)
         {
+            if (quantity <= 0)
+            {
+                return BadRequest(new { message = "Quantity must be greater than zero." });
+            }
+
             await _productService.DecrementStockAsync(id, quantity);
             return Ok(new { message = "Stock decremented successfully." });
         }
@@ -72,6 +87,11 @@ namespace ProductWarehouseAPI.Controllers
         [HttpPut("/add-to-stock/{id:int}/{quantity:int}")]
         public async Task<IActionResult> AddToStock(int id, int quantity)
         {
+            if (quantity <= 0)
+            {
+                return BadRequest(new { message = "Quantity must be greater than zero." });
+            }
+
             await _productService.IncrementStockAsync(id, quantity);
             return Ok(new { message = "Stock added successfully." });
         }

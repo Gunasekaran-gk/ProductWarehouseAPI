@@ -27,6 +27,12 @@ namespace ProductWarehouse.Infrastructure.Data
 
                 entity.HasIndex(e => e.ProductId)
                 .IsUnique();
+
+                entity.ToTable(e =>
+                {
+                    e.HasCheckConstraint("CK_Products_TotalQuantity_NonNegative", "[TotalQuantity] >= 0");
+                    e.HasCheckConstraint("CK_Products_Price_NonNegative", "[Price] > 0");
+                });
             });
         }
     }
